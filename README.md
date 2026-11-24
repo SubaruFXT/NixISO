@@ -30,7 +30,7 @@ Niri's configuration is deliberately not managed by this repository:
 
 Niri therefore uses the default configuration embedded in the Niri package, as described by the [upstream configuration-loading documentation](https://niri-wm.github.io/niri/Configuration:-Introduction).
 
-**No Waybar, Fuzzel, Swaylock, or replacement launcher is installed.** The upstream default configuration still contains commands that attempt to start some of those programs (including Waybar at startup and Fuzzel/Swaylock on their default keybindings). Those commands will not work because the programs are not installed. The Niri configuration itself remains untouched.
+No optional application launcher, bar, or lock-screen program is added to the ISO. The upstream default configuration can reference optional programs that are not included in this base; those particular commands will not work. The Niri configuration itself remains untouched.
 
 The NixOS Niri module's Nautilus integration is disabled to avoid adding an unrequested file manager; this does not modify Niri's KDL configuration.
 
