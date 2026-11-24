@@ -28,6 +28,16 @@
     };
   };
 
+  # Use Yazi as the XDG FileChooser portal backend.
+  # Alacritty is used as the terminal for the Yazi chooser session.
+  environment.systemPackages = [ pkgs.yazi ];
+
+  xdg.portal = {
+    extraPortals = [ pkgs.xdg-desktop-portal-termfilechooser ];
+    config.niri."org.freedesktop.impl.portal.FileChooser" =
+      lib.mkForce "termfilechooser";
+  };
+
   # Use the standard temporary installation-media account with Fish.
   users.users.nixos.shell = pkgs.fish;
 
