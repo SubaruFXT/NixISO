@@ -25,6 +25,13 @@ These are the primary references for this configuration. The repository intentio
 - [Niri configuration loading behavior](https://niri-wm.github.io/niri/Configuration:-Introduction)
 - [Niri getting started](https://niri-wm.github.io/niri/Getting-Started)
 
+## Yazi and XDG file chooser
+
+- [Yazi documentation: using Yazi as your system file chooser](https://yazi-rs.github.io/docs/tips/#yazi-as-your-system-file-chooser)
+- [xdg-desktop-portal-termfilechooser source repository](https://github.com/hunkyburrito/xdg-desktop-portal-termfilechooser)
+- [Nixpkgs package: xdg-desktop-portal-termfilechooser](https://github.com/NixOS/nixpkgs/tree/nixos-unstable/pkgs/by-name/xd/xdg-desktop-portal-termfilechooser)
+- [XDG Desktop Portal FileChooser interface](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.impl.portal.FileChooser.html)
+
 ## Home Manager
 
 - [Home Manager source repository](https://github.com/nix-community/home-manager)
@@ -39,3 +46,5 @@ Optional programs referenced by Niri's default configuration are intentionally n
 The live ISO uses the standard `nixos` installation-media account. Getty automatically logs it in on tty1, and the NixOS Fish `loginShellInit` hook launches `niri-session -l` from that TTY. The `-l` argument tells the session launcher not to start another login shell. No display manager or graphical greeter is configured.
 
 Alacritty and LibreWolf autostart are configured independently through XDG desktop-autostart entries in the live ISO user's Home Manager profile. This does not modify Niri's configuration.
+
+Niri's XDG FileChooser portal is routed to `xdg-desktop-portal-termfilechooser`, using its packaged Yazi wrapper. The wrapper launches Yazi in Alacritty, configured through the live ISO user's Home Manager file. The GTK portal remains available for other portal interfaces but is not selected for Niri's FileChooser interface. This only affects applications that use the XDG FileChooser portal; application-specific support and preferences can vary.
