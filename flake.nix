@@ -1,5 +1,5 @@
 {
-  description = "NixOS live installer and shared system configuration";
+  description = "Reusable AMD-focused NixOS manual-installation ISO";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -11,33 +11,13 @@
   };
 
   outputs = { self, nixpkgs, home-manager, ... }: {
-    nixosConfigurations = {
-      iso = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+    nixosConfigurations.iso = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
 
-        modules = [
-          home-manager.nixosModules.home-manager
-          ./hosts/iso
-        ];
-      };
-
-      laptop = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-
-        modules = [
-          home-manager.nixosModules.home-manager
-          ./hosts/laptop
-        ];
-      };
-
-      desktop = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-
-        modules = [
-          home-manager.nixosModules.home-manager
-          ./hosts/desktop
-        ];
-      };
+      modules = [
+        home-manager.nixosModules.home-manager
+        ./hosts/iso
+      ];
     };
 
     packages.x86_64-linux.iso =
