@@ -3,35 +3,56 @@
 {
   imports = [
     (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
-    ../../modules/nixos/amd-common.nix
+    ../../modules/nixos/amd-hardware.nix
   ];
 
   networking.hostName = "nixiso";
-  boot.supportedFilesystems.zfs = lib.mkForce false;
 
-  # Use the standard temporary account provided by the NixOS installer.
+  # Enable networking for the live manual-installation environment.
+  networking.networkmanager.enable = true;
+
+  # Enable flakes in the live installer so users can build their own
+  # configurations from Git repositories during manual installation.
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
+  # The installer provides a minimal Niri session and Fish shell.
+  programs = {
+    fish.enable = true;
+    niri = {
+      enable = true;
+      useNautilus = false;
+    };
+  };
+
+  security.polkit.enable = true;
+
+  # Use the standard temporary installation-media account.
   users.users.nixos.shell = pkgs.fish;
-
-  # Log in directly on tty1. No display manager or graphical greeter.
   services.getty.autologinUser = "nixos";
 
-  # Start Niri from the automatically logged-in Fish shell.
-  # -l tells niri-session not to start another login shell.
+  # Start Niri on the automatically logged-in installer TTY.
+  # -l prevents niri-session from starting an additional login shell.
   programs.fish.loginShellInit = ''
     if test (tty) = /dev/tty1
       niri-session -l
     end
   '';
 
-  home-manager.users.nixos = {
-    imports = [
-      ../../home/common.nix
-      ../../home/iso.nix
-    ];
+  # Home Manager is used only for the live ISO session's applications.
+  # It does not define an installed-system user configuration.
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
 
-    home.username = "nixos";
-    home.homeDirectory = "/home/nixos";
-    home.stateVersion = lib.trivial.release;
+    users.nixos = {
+      imports = [ ../../home/iso.nix ];
+      home.username = "nixos";
+      home.homeDirectory = "/home/nixos";
+      home.stateVersion = lib.trivial.release;
+    };
   };
 
   system.stateVersion = lib.trivial.release;
