@@ -1,4 +1,4 @@
-{ config, lib, modulesPath, pkgs, ... }:
+{ lib, modulesPath, pkgs, ... }:
 
 {
   imports = [
@@ -8,31 +8,19 @@
 
   networking.hostName = "nixiso";
 
-  # Use the standard temporary NixOS installation-media account.
-  # The ISO profile already creates this account with wheel access and
-  # an empty password. It is not a personal account from any user's fork.
+  # Use the standard temporary account provided by the NixOS installer.
   users.users.nixos.shell = pkgs.fish;
 
-  # Disable the installation image's TTY autologin so greetd starts
-  # the graphical live session instead.
-  services.getty.autologinUser = lib.mkForce null;
+  # Log in directly on tty1. No display manager or graphical greeter.
+  services.getty.autologinUser = "nixos";
 
-  services.greetd = {
-    enable = true;
-    restart = false;
-
-    settings = {
-      initial_session = {
-        command = "${pkgs.niri}/bin/niri-session";
-        user = "nixos";
-      };
-
-      default_session = {
-        command = "${pkgs.greetd}/bin/agreety --cmd ${pkgs.niri}/bin/niri-session";
-        user = "greeter";
-      };
-    };
-  };
+  # Start the Niri session from the automatically logged-in Fish shell.
+  # If Niri exits, control returns to the Fish prompt on tty1.
+  programs.fish.loginShellInit = ''
+    if test (tty) = /dev/tty1
+      niri-session
+    end
+  '';
 
   home-manager.users.nixos = {
     imports = [
