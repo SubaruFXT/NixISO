@@ -3,13 +3,18 @@
 {
   imports = [
     (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
-    ../../modules/nixos/shared.nix
+    ../../modules/nixos/amd-common.nix
   ];
 
   networking.hostName = "nixiso";
 
-  # The installation-CD profile normally autologs into the nixos TTY user.
-  # Disable that path so greetd is the only automatic session startup.
+  # Use the standard temporary NixOS installation-media account.
+  # The ISO profile already creates this account with wheel access and
+  # an empty password. It is not a personal account from any user's fork.
+  users.users.nixos.shell = pkgs.fish;
+
+  # Disable the installation image's TTY autologin so greetd starts
+  # the graphical live session instead.
   services.getty.autologinUser = lib.mkForce null;
 
   services.greetd = {
@@ -19,7 +24,7 @@
     settings = {
       initial_session = {
         command = "${pkgs.niri}/bin/niri-session";
-        user = "subaru";
+        user = "nixos";
       };
 
       default_session = {
@@ -29,12 +34,16 @@
     };
   };
 
-  # The live ISO user is temporary and has no password.
-  users.users.subaru.initialHashedPassword = "";
+  home-manager.users.nixos = {
+    imports = [
+      ../../home/common.nix
+      ../../home/iso.nix
+    ];
 
-  home-manager.users.subaru.imports = [
-    ../../home/iso.nix
-  ];
+    home.username = "nixos";
+    home.homeDirectory = "/home/nixos";
+    home.stateVersion = lib.trivial.release;
+  };
 
-  system.stateVersion = "26.05";
+  system.stateVersion = lib.trivial.release;
 }
