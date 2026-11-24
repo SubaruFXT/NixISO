@@ -15,10 +15,16 @@
   programs = {
     fish.enable = true;
     git.enable = true;
-    niri.enable = true;
+    niri = {
+      enable = true;
+      useNautilus = false;
+    };
   };
 
-  security.polkit.enable = true;
+  security = {
+    polkit.enable = true;
+    pam.services.swaylock = { };
+  };
 
   users.users.subaru = {
     isNormalUser = true;
