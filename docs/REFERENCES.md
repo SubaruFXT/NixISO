@@ -11,6 +11,8 @@ These are the primary references for this configuration. The repository intentio
 - [NixOS GitHub organization](https://github.com/NixOS/)
 - [Nixpkgs Niri module](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/programs/wayland/niri.nix)
 - [Nixpkgs Fish module](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/programs/fish.nix)
+- [Nixpkgs installation-device profile](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/profiles/installation-device.nix)
+- [NixOS TTY compositor startup example](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/tests/tinywl.nix)
 - [Nixpkgs installation CD base module](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/installer/cd-dvd/installation-cd-base.nix)
 - [Nixpkgs minimal installation image module](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix)
 
@@ -32,7 +34,7 @@ These are the primary references for this configuration. The repository intentio
 
 Niri is enabled using the native NixOS `programs.niri` module. This repository does not create or manage a Niri KDL configuration. In particular, it does not install `config.kdl` under either the user's home directory or `/etc/niri/`. Niri uses the default configuration embedded in the selected Niri package.
 
-The default configuration references optional programs such as Waybar, Fuzzel, and Swaylock. NixISO intentionally does not install those applications and does not modify the default configuration to work around their absence.
+Optional programs referenced by Niri's default configuration are intentionally not added to this base. Those commands remain exactly as shipped upstream, but the corresponding optional functionality is unavailable when its executable is not installed.
 
 The live ISO uses the standard `nixos` installation-media account. Getty automatically logs it in on tty1, and the NixOS Fish `loginShellInit` hook launches `niri-session` from that TTY. No display manager or graphical greeter is configured.
 
