@@ -29,6 +29,15 @@
           ./hosts/laptop
         ];
       };
+
+      desktop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+
+        modules = [
+          home-manager.nixosModules.home-manager
+          ./hosts/desktop
+        ];
+      };
     };
 
     packages.x86_64-linux.iso =
