@@ -27,4 +27,11 @@
   users.defaultUserShell = pkgs.fish;
 
   security.polkit.enable = true;
+
+  # Home Manager is imported by the flake. Keep its package set aligned
+  # with the system package set for all hosts using this shared module.
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+  };
 }
