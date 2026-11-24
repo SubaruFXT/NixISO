@@ -1,6 +1,6 @@
 # NixISO technical references
 
-These sources guide the configuration. When behavior or option names are uncertain, prefer the current NixOS module implementation and current Niri documentation over assumptions or older tutorials.
+These are the primary references for this configuration. The repository intentionally follows native NixOS and Niri mechanisms rather than copying an unrelated desktop configuration.
 
 ## NixOS
 
@@ -21,7 +21,6 @@ These sources guide the configuration. When behavior or option names are uncerta
 - [Niri wiki](https://github.com/niri-wm/niri/wiki)
 - [Niri upstream default configuration](https://github.com/niri-wm/niri/blob/main/resources/default-config.kdl)
 - [Niri configuration loading behavior](https://niri-wm.github.io/niri/Configuration:-Introduction)
-- [Niri autostart documentation](https://niri-wm.github.io/niri/Configuration:-Miscellaneous#spawn-at-startup)
 
 ## Home Manager
 
@@ -30,9 +29,10 @@ These sources guide the configuration. When behavior or option names are uncerta
 
 ## Configuration policy
 
-- Niri is enabled with the native NixOS `programs.niri` module.
-- This repository intentionally does not create or manage `config.kdl`.
-- The ISO does not install `/etc/niri/config.kdl`.
-- Niri therefore uses the upstream default configuration embedded in the Niri package.
-- The ISO does not install Fuzzel. The upstream default `Super+D` binding remains unchanged and will not launch an application unless Fuzzel is installed separately.
-- ISO-only automatic application startup is handled outside Niri's configuration using desktop autostart entries.
+Niri is enabled using the native NixOS `programs.niri` module. This repository does not create or manage a Niri KDL configuration. In particular, it does not install `config.kdl` under either the user's home directory or `/etc/niri/`. Niri uses the default configuration embedded in the selected Niri package.
+
+The default configuration references optional programs such as Waybar, Fuzzel, and Swaylock. NixISO intentionally does not install those applications and does not modify the default configuration to work around their absence.
+
+Alacritty and LibreWolf autostart are configured independently through XDG desktop-autostart entries in the live ISO user's Home Manager profile. This does not modify Niri's configuration.
+
+The ISO uses the standard `nixos` account supplied by the NixOS installation-media profile. Personal usernames are configured only in a user's fork.
