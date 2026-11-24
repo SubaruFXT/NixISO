@@ -1,58 +1,71 @@
 # NixISO
 
-A NixOS live-installer configuration with shared system and user modules intended for the desktop and laptop installations. Reproducible builds require the generated `flake.lock` to be committed.
+A reusable NixOS live installer and AMD-focused configuration base. It is intended for people with an AMD desktop and AMD laptop who want both installations to share the same operating-system and user modules, then maintain personal changes in their own fork.
 
-## Current implementation
+The repository is a base/template. It does not contain an author's personal username, personal dotfiles, or machine-specific disk layout.
 
-This first configuration stage defines an x86_64 NixOS live ISO and the shared configuration modules that will also be used by the installed systems. It has been committed to GitHub but has not yet been evaluated or built on a NixOS machine. The desktop and laptop host configurations are deliberately not declared yet: their generated hardware configurations and boot requirements must be captured from the actual machines rather than guessed.
+## What the ISO provides
 
-## Live ISO
-
-The ISO is based on the upstream NixOS minimal installation image and adds:
+The ISO is based on the upstream NixOS minimal installation image and adds only the requested desktop environment and applications:
 
 - Niri, enabled through the native NixOS `programs.niri` module.
 - The upstream Niri default configuration, unmodified.
-- Fish as the `subaru` user's shell.
-- Alacritty and LibreWolf.
-- Waybar, which the upstream Niri default configuration starts automatically.
-- Swaylock, which the upstream default configuration binds to `Super+Alt+L`, with its PAM service enabled.
-- greetd configured to start Niri automatically as `subaru`.
-- Alacritty and LibreWolf automatically started through ISO-only XDG autostart desktop entries.
-- The NixOS manual's manual-installation section opened in LibreWolf.
-- Git and the standard installation tools supplied by the upstream NixOS installation image.
-- GitHub CLI on the live ISO so the private NixISO repository can be authenticated and cloned.
+- Fish as the shell.
+- Alacritty.
+- LibreWolf, opening the NixOS manual's manual-installation section.
+- Automatic graphical login to Niri using the standard temporary `nixos` installation-media account.
+- Git and the partitioning, networking, and filesystem utilities already supplied by the upstream NixOS installation image.
 
-The upstream installer profile also enables NetworkManager and supplies the normal disk and filesystem utilities. NixISO builds on those defaults instead of replacing them.
+Alacritty and LibreWolf start automatically in the ISO session. The ISO's automatic login and application autostart do not belong to the installed desktop or laptop configuration.
 
-### Niri default configuration is intentionally not managed here
+## Niri configuration policy
 
-There is no Niri `config.kdl` in this repository. Home Manager does not generate or install one, and the ISO does not install an `/etc/niri/config.kdl`. When Niri first starts, it therefore creates its own embedded upstream default configuration in the live user's home directory.
+Niri's configuration is deliberately not managed by this repository:
 
-The default configuration is not edited to remove or replace any keybinding. Fuzzel is intentionally not installed. As a result, the unmodified `Super+D` default binding still attempts to launch Fuzzel and will not work. No alternative launcher is installed.
+- No `config.kdl` is stored here.
+- No Home Manager Niri configuration is declared.
+- No `/etc/niri/config.kdl` is installed.
+- No keybindings, layout settings, appearance settings, or other Niri defaults are overridden.
 
-The native NixOS Niri module's Nautilus integration is disabled; this does not change Niri's KDL configuration.
+Niri therefore uses the default configuration embedded in the Niri package, as described by the [upstream configuration-loading documentation](https://niri-wm.github.io/niri/Configuration:-Introduction).
 
-### Automatic login scope
+**No Waybar, Fuzzel, Swaylock, or replacement launcher is installed.** The upstream default configuration still contains commands that attempt to start some of those programs (including Waybar at startup and Fuzzel/Swaylock on their default keybindings). Those commands will not work because the programs are not installed. The Niri configuration itself remains untouched.
 
-greetd's automatic Niri session exists only in `hosts/iso/default.nix`. The shared system module does not configure automatic login, and the installed desktop and laptop will use normal login.
+The NixOS Niri module's Nautilus integration is disabled to avoid adding an unrequested file manager; this does not modify Niri's KDL configuration.
 
-The ISO disables the installation profile's automatic text-console login so greetd is the only automatic session startup path.
+## Shared AMD base
 
-## Shared configuration
+The shared system module is `modules/nixos/amd-common.nix`. It contains settings intended to be common to AMD desktop and laptop systems:
 
-The shared NixOS module enables:
-
-- Niri through the native NixOS module.
-- Fish and sets it as the `subaru` user's shell.
+- Latest kernel package set from nixpkgs unstable.
+- AMD CPU microcode updates.
+- Redistributable firmware support.
+- Mesa graphics support.
 - NetworkManager.
-- Mesa graphics support for the supported AMD and Intel graphics stack.
-- The latest kernel package set from the selected nixpkgs input.
-- Polkit and the PAM service required by the default Swaylock binding.
+- Niri through the native NixOS module.
+- Fish as the default shell for users whose shell is not explicitly set.
+- Polkit.
 - Nix flakes and the `nix-command` feature.
 
-The shared Home Manager module installs Alacritty, LibreWolf, Waybar, and Swaylock for `subaru`. These are shared with the future installed desktop and laptop configurations. The ISO-specific Home Manager module adds GitHub CLI and the two live-session application autostart entries.
+The shared Home Manager module is `home/common.nix`. It enables Fish and installs only Alacritty and LibreWolf. Import it for the personal user account in both installed host configurations.
 
-Home Manager uses `useGlobalPkgs = true` and `useUserPackages = true`, and its nixpkgs input follows the flake's nixpkgs input.
+The ISO uses the standard temporary `nixos` user provided by the NixOS installer profile. The name `nixos` is not used for a personal installed account. A personal username belongs in the user's own fork.
+
+## Desktop and laptop
+
+The repository includes starter host modules under `hosts/desktop/` and `hosts/laptop/`. Both import the same AMD system module. Each host requires its own `hardware-configuration.nix`, generated on that machine, plus its own real bootloader and file-system settings.
+
+No hardware configuration is invented or shared between devices. The host files are templates, not complete installed-system flake outputs yet. Follow [hosts/README.md](hosts/README.md) to finish them in a fork.
+
+## Fork-based workflow
+
+1. Build and boot the live ISO.
+2. Install NixOS manually using the NixOS manual.
+3. Fork this repository for personal configuration.
+4. Add each machine's generated hardware configuration, boot settings, personal user, and personal modules to the fork.
+5. Keep `modules/nixos/amd-common.nix` and `home/common.nix` shared between desktop and laptop. Personal changes can be added in separate modules without duplicating the common files.
+
+This keeps the base reusable for other AMD users while allowing each fork to maintain its own identity and preferences.
 
 ## Build the ISO
 
@@ -63,20 +76,10 @@ nix --extra-experimental-features 'nix-command flakes' flake lock
 nix --extra-experimental-features 'nix-command flakes' build .#iso
 ```
 
-The resulting ISO is under `result/iso/`.
+The ISO appears under `result/iso/`.
 
-Commit `flake.lock` to Git after the first lock operation. That lock file pins the exact nixpkgs and Home Manager revisions used by subsequent builds. Updating those inputs should be an intentional, reviewed operation.
-
-## Manual installation and host configurations
-
-The live ISO provides the environment for manual partitioning and installation. It does not guess the target machine's disk layout, firmware mode, bootloader, or hardware configuration.
-
-The installed desktop and laptop are not yet exposed as flake configurations. Before adding them, generate and review the hardware configuration on each actual machine and confirm the machine-specific boot settings and `system.stateVersion`. The desktop's existing NixOS state version is 26.05 and should be preserved. The laptop's state version must be established from that machine rather than assumed.
-
-The shared modules in `modules/nixos/shared.nix` and `home/subaru/` are intended to be imported by both installed host configurations. The ISO-only greetd login and application autostart module must not be imported into those host configurations.
-
-Because this GitHub repository is private, authenticate in the live ISO with `gh auth login` before cloning it.
+Commit the generated `flake.lock` to Git after the first lock operation. It pins exact nixpkgs and Home Manager revisions for reproducible future builds. This configuration has been committed to GitHub but has not yet been evaluated or built; successful evaluation and ISO testing are still required.
 
 ## References
 
-See [docs/REFERENCES.md](docs/REFERENCES.md) for the NixOS and Niri documentation used to design this configuration.
+See [docs/REFERENCES.md](docs/REFERENCES.md) for the NixOS and Niri documentation used to design this base.
