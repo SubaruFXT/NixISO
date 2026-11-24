@@ -1,10 +1,10 @@
 # NixISO
 
-A reproducible NixOS live installer environment, with shared system and user modules intended for the desktop and laptop installations.
+A NixOS live-installer configuration with shared system and user modules intended for the desktop and laptop installations. Reproducible builds require the generated `flake.lock` to be committed.
 
 ## Current implementation
 
-This first configuration stage provides a buildable x86_64 NixOS live ISO and the shared configuration modules that will also be used by the installed systems. The desktop and laptop host configurations are deliberately not declared yet: their generated hardware configurations and boot requirements must be captured from the actual machines rather than guessed.
+This first configuration stage defines an x86_64 NixOS live ISO and the shared configuration modules that will also be used by the installed systems. It has been committed to GitHub but has not yet been evaluated or built on a NixOS machine. The desktop and laptop host configurations are deliberately not declared yet: their generated hardware configurations and boot requirements must be captured from the actual machines rather than guessed.
 
 ## Live ISO
 
