@@ -13,10 +13,11 @@ The ISO is based on the upstream NixOS minimal installation image and adds only 
 - Fish as the shell.
 - Alacritty.
 - LibreWolf, opening the NixOS manual's manual-installation section.
-- Automatic graphical login to Niri using the standard temporary `nixos` installation-media account.
+- Automatic TTY login as the standard temporary `nixos` installation-media account.
+- Niri starts from Fish's login-shell initialization on tty1. There is no display manager or graphical login screen.
 - Git and the partitioning, networking, and filesystem utilities already supplied by the upstream NixOS installation image.
 
-Alacritty and LibreWolf start automatically in the ISO session. The ISO's automatic login and application autostart do not belong to the installed desktop or laptop configuration.
+Alacritty and LibreWolf start automatically in the ISO session. The ISO's TTY autologin and application autostart do not belong to the installed desktop or laptop configuration.
 
 ## Niri configuration policy
 
@@ -35,7 +36,7 @@ The NixOS Niri module's Nautilus integration is disabled to avoid adding an unre
 
 ## Shared AMD base
 
-The shared system module is `modules/nixos/amd-common.nix`. It contains settings intended to be common to AMD desktop and laptop systems:
+The reusable system module is `modules/nixos/amd-common.nix`. The host files under `hosts/desktop/` and `hosts/laptop/` import this same module. It contains settings intended to remain identical on both AMD machines:
 
 - Latest kernel package set from nixpkgs unstable.
 - AMD CPU microcode updates.
@@ -46,16 +47,19 @@ The shared system module is `modules/nixos/amd-common.nix`. It contains settings
 - Fish as the default shell for users whose shell is not explicitly set.
 - Polkit.
 - Nix flakes and the `nix-command` feature.
+- Shared Home Manager package-set integration.
 
 The shared Home Manager module is `home/common.nix`. It enables Fish and installs only Alacritty and LibreWolf. Import it for the personal user account in both installed host configurations.
 
-The ISO uses the standard temporary `nixos` user provided by the NixOS installer profile. The name `nixos` is not used for a personal installed account. A personal username belongs in the user's own fork.
+The ISO uses the standard temporary `nixos` user provided by the NixOS installer profile. The name `nixos` is not a personal installed account. A personal username belongs in the user's own fork.
 
-## Desktop and laptop
+## Why both hosts and shared modules exist
 
-The repository includes starter host modules under `hosts/desktop/` and `hosts/laptop/`. Both import the same AMD system module. Each host requires its own `hardware-configuration.nix`, generated on that machine, plus its own real bootloader and file-system settings.
+The files under `hosts/` are per-machine entry points. They select which shared modules to import and contain the settings that genuinely differ between devices.
 
-No hardware configuration is invented or shared between devices. The host files are templates, not complete installed-system flake outputs yet. Follow [hosts/README.md](hosts/README.md) to finish them in a fork.
+The file `modules/nixos/amd-common.nix` is not another host. It is the shared system module imported by both desktop and laptop. Without it, the common NixOS settings would have to be copied into both host files and could drift apart over time.
+
+Each host still requires its own `hardware-configuration.nix`, generated on that machine, plus its own real bootloader and file-system settings.
 
 ## Fork-based workflow
 
