@@ -7,15 +7,6 @@
     pkgs.librewolf
   ];
 
-  # Configure the termfilechooser portal to run its packaged Yazi wrapper
-  # inside Alacritty. Yazi itself is installed system-wide for the portal.
-  home.file.".config/xdg-desktop-portal-termfilechooser/config".text = ''
-    [filechooser]
-    cmd=yazi-wrapper.sh
-    env=PATH=/run/current-system/sw/bin
-    env=TERMCMD=${pkgs.alacritty}/bin/alacritty -e
-  '';
-
   # These autostart entries apply only to the live ISO account.
   # They do not create defaults for the system users install later.
   home.file.".config/autostart/nixiso-alacritty.desktop".text = ''
