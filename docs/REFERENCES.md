@@ -25,13 +25,6 @@ These are the primary references for this configuration. The repository intentio
 - [Niri configuration loading behavior](https://niri-wm.github.io/niri/Configuration:-Introduction)
 - [Niri getting started](https://niri-wm.github.io/niri/Getting-Started)
 
-## Yazi and XDG file chooser
-
-- [Yazi documentation: using Yazi as your system file chooser](https://yazi-rs.github.io/docs/tips/#yazi-as-your-system-file-chooser)
-- [xdg-desktop-portal-termfilechooser source repository](https://github.com/hunkyburrito/xdg-desktop-portal-termfilechooser)
-- [Nixpkgs package: xdg-desktop-portal-termfilechooser](https://github.com/NixOS/nixpkgs/tree/nixos-unstable/pkgs/by-name/xd/xdg-desktop-portal-termfilechooser)
-- [XDG Desktop Portal FileChooser interface](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.impl.portal.FileChooser.html)
-
 ## Home Manager
 
 - [Home Manager source repository](https://github.com/nix-community/home-manager)
@@ -47,4 +40,4 @@ The live ISO uses the standard `nixos` installation-media account. Getty automat
 
 Alacritty and LibreWolf autostart are configured independently through XDG desktop-autostart entries in the live ISO user's Home Manager profile. This does not modify Niri's configuration.
 
-Niri's XDG FileChooser portal is routed to `xdg-desktop-portal-termfilechooser`, using its packaged Yazi wrapper. The wrapper launches Yazi in Alacritty, configured through the live ISO user's Home Manager file. The GTK portal remains available for other portal interfaces but is not selected for Niri's FileChooser interface. This only affects applications that use the XDG FileChooser portal; application-specific support and preferences can vary.
+Niri is configured with `useNautilus = false`. The ISO does not install Nautilus; the Niri session uses the GTK XDG portal backend for standard file-selection dialogs.
