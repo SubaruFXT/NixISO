@@ -1,6 +1,10 @@
 { pkgs, ... }:
 
 {
+  home.packages = [
+    pkgs.gh
+  ];
+
   home.file.".config/autostart/nixiso-alacritty.desktop".text = ''
     [Desktop Entry]
     Type=Application
