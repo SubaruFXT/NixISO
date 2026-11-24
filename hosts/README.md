@@ -1,52 +1,28 @@
 # Host configurations
 
-The desktop and laptop both import the same AMD system module:
+The host directories contain machine-specific entry points. Both installed machines should import the same common modules:
 
 - `modules/nixos/amd-common.nix`
-- `home/common.nix` for the personal account on each installed system
+- `home/common.nix` for the personal account
 
-Keep common operating-system behavior and common applications in those shared files. Machine-specific hardware belongs only in that machine's generated `hardware-configuration.nix`.
+Keep machine-specific hardware in that machine's generated `hardware-configuration.nix`. Never copy filesystem UUIDs, kernel modules, or mount settings between machines.
 
-## In a personal fork
+## Laptop
 
-1. Boot the NixISO installer on the target machine.
-2. Partition and mount its disks according to the NixOS manual.
-3. Generate that machine's hardware configuration with `nixos-generate-config --root /mnt`.
-4. Put the generated `hardware-configuration.nix` in the matching host directory.
-5. Set that machine's bootloader, file systems, and `system.stateVersion`.
-6. Define your personal account in a host or personal module.
-7. Import `home/common.nix` for that account through Home Manager and set `home.username`, `home.homeDirectory`, and `home.stateVersion`.
+The laptop host is configured as the first installed system. It contains:
 
-The generic host modules are templates: they deliberately contain no guessed partition, firmware, bootloader, or device details. They are not complete installable host outputs until the actual hardware configuration and machine-specific boot settings are added in your fork.
+- The generated hardware configuration from the laptop's current UEFI live session.
+- systemd-boot with the EFI System Partition mounted at `/boot`.
+- 4 GiB disk swap plus ZRAM.
+- The `subaru` user, in the `wheel` and `networkmanager` groups.
+- The shared Home Manager applications and Fish shell.
 
-## Example Home Manager user declaration
+No password or password hash is stored in Git. Set the account password locally during installation.
 
-Add the following to the host-specific module in your fork, replacing `YOUR_USERNAME` and the state-version placeholder with your actual values:
+## Desktop
 
-```nix
-{ ... }:
+The desktop host remains a template until its own generated hardware configuration and boot settings have been captured and evaluated. Do not point the desktop flake output at the laptop hardware file.
 
-{
-  users.users."YOUR_USERNAME" = {
-    isNormalUser = true;
-    extraGroups = [
-      "wheel"
-      "networkmanager"
-    ];
-  };
+## State versions
 
-  home-manager.users."YOUR_USERNAME" = {
-    imports = [
-      ../../home/common.nix
-    ];
-
-    home.username = "YOUR_USERNAME";
-    home.homeDirectory = "/home/YOUR_USERNAME";
-    home.stateVersion = "SET_THIS_FOR_YOUR_USER";
-  };
-}
-```
-
-The Home Manager NixOS module must be included in the fork's flake for each host. The existing flake input and `home-manager.inputs.nixpkgs.follows = "nixpkgs"` setting are already provided.
-
-A two-machine fork should keep `modules/nixos/amd-common.nix` and `home/common.nix` identical. Keep per-device differences in the two host directories and generated hardware configurations, and keep personal customizations in separate modules.
+The laptop's initial NixOS and Home Manager state versions are both `26.11`. After installation, these values should be treated as compatibility settings and should not be changed casually during upgrades.
