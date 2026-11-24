@@ -8,6 +8,10 @@
 
   networking.hostName = "nixiso";
 
+  # Keep ZFS out of the live ISO because the latest kernel package set
+  # does not provide the matching ZFS module set.
+  boot.supportedFilesystems.zfs = lib.mkForce false;
+
   # Enable networking for the live manual-installation environment.
   networking.networkmanager.enable = true;
 
