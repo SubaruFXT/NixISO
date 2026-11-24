@@ -15,9 +15,9 @@ The ISO is based on the upstream NixOS minimal installation image and adds:
 - Fish as the `subaru` user's shell.
 - Alacritty and LibreWolf.
 - Waybar, which the upstream Niri default configuration starts automatically.
-- Swaylock, which the upstream default configuration binds to `Super+Alt+L`.
+- Swaylock, which the upstream default configuration binds to `Super+Alt+L`, with its PAM service enabled.
 - greetd configured to start Niri automatically as `subaru`.
-- Alacritty and LibreWolf automatically started by ISO-only systemd user services attached to `niri.service`.
+- Alacritty and LibreWolf automatically started through ISO-only XDG autostart desktop entries.
 - The NixOS manual's manual-installation section opened in LibreWolf.
 - Git and the standard installation tools supplied by the upstream NixOS installation image.
 - GitHub CLI on the live ISO so the private NixISO repository can be authenticated and cloned.
@@ -29,6 +29,8 @@ The upstream installer profile also enables NetworkManager and supplies the norm
 There is no Niri `config.kdl` in this repository. Home Manager does not generate or install one, and the ISO does not install an `/etc/niri/config.kdl`. When Niri first starts, it therefore creates its own embedded upstream default configuration in the live user's home directory.
 
 The default configuration is not edited to remove or replace any keybinding. Fuzzel is intentionally not installed. As a result, the unmodified `Super+D` default binding still attempts to launch Fuzzel and will not work. No alternative launcher is installed.
+
+The native NixOS Niri module's Nautilus integration is disabled; this does not change Niri's KDL configuration.
 
 ### Automatic login scope
 
@@ -43,12 +45,12 @@ The shared NixOS module enables:
 - Niri through the native NixOS module.
 - Fish and sets it as the `subaru` user's shell.
 - NetworkManager.
-- AMD/Intel-compatible Mesa graphics support through `hardware.graphics.enable`.
+- Mesa graphics support for the supported AMD and Intel graphics stack.
 - The latest kernel package set from the selected nixpkgs input.
-- Polkit and the PAM entry needed by the default Swaylock binding.
+- Polkit and the PAM service required by the default Swaylock binding.
 - Nix flakes and the `nix-command` feature.
 
-The shared Home Manager module installs Alacritty, LibreWolf, Waybar, and Swaylock for `subaru`. These are shared with the future installed desktop and laptop configurations. The ISO-specific Home Manager module adds only the GitHub CLI and the two live-session application launch services.
+The shared Home Manager module installs Alacritty, LibreWolf, Waybar, and Swaylock for `subaru`. These are shared with the future installed desktop and laptop configurations. The ISO-specific Home Manager module adds GitHub CLI and the two live-session application autostart entries.
 
 Home Manager uses `useGlobalPkgs = true` and `useUserPackages = true`, and its nixpkgs input follows the flake's nixpkgs input.
 
@@ -71,7 +73,7 @@ The live ISO provides the environment for manual partitioning and installation. 
 
 The installed desktop and laptop are not yet exposed as flake configurations. Before adding them, generate and review the hardware configuration on each actual machine and confirm the machine-specific boot settings and `system.stateVersion`. The desktop's existing NixOS state version is 26.05 and should be preserved. The laptop's state version must be established from that machine rather than assumed.
 
-The shared modules in `modules/nixos/shared.nix` and `modules/home-manager/subaru.nix` are intended to be imported by both installed host configurations. The ISO-only greetd login and application autostart services must not be imported into those host configurations.
+The shared modules in `modules/nixos/shared.nix` and `home/subaru/` are intended to be imported by both installed host configurations. The ISO-only greetd login and application autostart module must not be imported into those host configurations.
 
 Because this GitHub repository is private, authenticate in the live ISO with `gh auth login` before cloning it.
 
