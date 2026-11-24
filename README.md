@@ -57,7 +57,7 @@ NixISO/
 - `flake.lock`: pins exact nixpkgs and Home Manager revisions for reproducible builds.
 - `hosts/iso/default.nix`: configures the temporary live installer environment.
 - `modules/nixos/amd-hardware.nix`: contains only the AMD-oriented hardware settings used by this ISO.
-- `home/iso.nix`: configures Fish, Alacritty, LibreWolf, and their live-session autostart entries for the temporary ISO account.
+- `home/iso.nix`: configures Alacritty, LibreWolf, and their live-session autostart entries for the temporary ISO account.
 - `docs/REFERENCES.md`: links to the upstream NixOS, Nixpkgs, Niri, and Home Manager documentation.
 
 Home Manager is used only to assemble the live ISO user's application environment. It is not a recommendation or requirement for the installed system users create.
