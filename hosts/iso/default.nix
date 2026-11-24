@@ -12,9 +12,6 @@
   # does not provide the matching ZFS module set.
   boot.supportedFilesystems.zfs = lib.mkForce false;
 
-  # Enable networking for the live manual-installation environment.
-  networking.networkmanager.enable = true;
-
   # Enable flakes in the live installer so users can build their own
   # configurations from Git repositories during manual installation.
   nix.settings.experimental-features = [
@@ -31,11 +28,8 @@
     };
   };
 
-  security.polkit.enable = true;
-
-  # Use the standard temporary installation-media account.
+  # Use the standard temporary installation-media account with Fish.
   users.users.nixos.shell = pkgs.fish;
-  services.getty.autologinUser = "nixos";
 
   # Start Niri on the automatically logged-in installer TTY.
   # -l prevents niri-session from starting an additional login shell.
@@ -55,9 +49,9 @@
       imports = [ ../../home/iso.nix ];
       home.username = "nixos";
       home.homeDirectory = "/home/nixos";
-      home.stateVersion = lib.trivial.release;
+      home.stateVersion = "26.11";
     };
   };
 
-  system.stateVersion = lib.trivial.release;
+  system.stateVersion = "26.11";
 }
