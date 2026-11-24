@@ -22,6 +22,18 @@
     };
   };
 
+  # Enable SSH for remote administration. Password login is enabled for the
+  # subaru account; root SSH login is disabled.
+  services.openssh = {
+    enable = true;
+    openFirewall = true;
+    settings = {
+      PasswordAuthentication = true;
+      PermitRootLogin = "no";
+      AllowUsers = [ "subaru" ];
+    };
+  };
+
   # This installation uses disk swap for overflow and ZRAM for compressed
   # in-memory swap. Hibernation is not configured.
   zramSwap = {
