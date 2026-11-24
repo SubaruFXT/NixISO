@@ -11,13 +11,24 @@
   };
 
   outputs = { self, nixpkgs, home-manager, ... }: {
-    nixosConfigurations.iso = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
+    nixosConfigurations = {
+      iso = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
 
-      modules = [
-        home-manager.nixosModules.home-manager
-        ./hosts/iso
-      ];
+        modules = [
+          home-manager.nixosModules.home-manager
+          ./hosts/iso
+        ];
+      };
+
+      laptop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+
+        modules = [
+          home-manager.nixosModules.home-manager
+          ./hosts/laptop
+        ];
+      };
     };
 
     packages.x86_64-linux.iso =
