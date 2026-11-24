@@ -10,7 +10,7 @@ These are the primary references for this configuration. The repository intentio
 - [NixOS Discourse](https://discourse.nixos.org/)
 - [NixOS GitHub organization](https://github.com/NixOS/)
 - [Nixpkgs Niri module](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/programs/wayland/niri.nix)
-- [Nixpkgs greetd module](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/display-managers/greetd.nix)
+- [Nixpkgs Fish module](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/programs/fish.nix)
 - [Nixpkgs installation CD base module](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/installer/cd-dvd/installation-cd-base.nix)
 - [Nixpkgs minimal installation image module](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix)
 
@@ -21,6 +21,7 @@ These are the primary references for this configuration. The repository intentio
 - [Niri wiki](https://github.com/niri-wm/niri/wiki)
 - [Niri upstream default configuration](https://github.com/niri-wm/niri/blob/main/resources/default-config.kdl)
 - [Niri configuration loading behavior](https://niri-wm.github.io/niri/Configuration:-Introduction)
+- [Niri getting started](https://niri-wm.github.io/niri/Getting-Started)
 
 ## Home Manager
 
@@ -33,6 +34,6 @@ Niri is enabled using the native NixOS `programs.niri` module. This repository d
 
 The default configuration references optional programs such as Waybar, Fuzzel, and Swaylock. NixISO intentionally does not install those applications and does not modify the default configuration to work around their absence.
 
-Alacritty and LibreWolf autostart are configured independently through XDG desktop-autostart entries in the live ISO user's Home Manager profile. This does not modify Niri's configuration.
+The live ISO uses the standard `nixos` installation-media account. Getty automatically logs it in on tty1, and the NixOS Fish `loginShellInit` hook launches `niri-session` from that TTY. No display manager or graphical greeter is configured.
 
-The ISO uses the standard `nixos` account supplied by the NixOS installation-media profile. Personal usernames are configured only in a user's fork.
+Alacritty and LibreWolf autostart are configured independently through XDG desktop-autostart entries in the live ISO user's Home Manager profile. This does not modify Niri's configuration.
