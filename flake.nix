@@ -10,7 +10,7 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, ... }: {
+  outputs = { self, nixpkgs, home-manager, ... }: {
     nixosConfigurations.iso = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
 
@@ -21,6 +21,6 @@
     };
 
     packages.x86_64-linux.iso =
-      nixosConfigurations.iso.config.system.build.isoImage;
+      self.nixosConfigurations.iso.config.system.build.isoImage;
   };
 }
