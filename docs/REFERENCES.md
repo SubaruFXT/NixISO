@@ -36,6 +36,6 @@ Niri is enabled using the native NixOS `programs.niri` module. This repository d
 
 Optional programs referenced by Niri's default configuration are intentionally not added to this base. Those commands remain exactly as shipped upstream, but the corresponding optional functionality is unavailable when its executable is not installed.
 
-The live ISO uses the standard `nixos` installation-media account. Getty automatically logs it in on tty1, and the NixOS Fish `loginShellInit` hook launches `niri-session` from that TTY. No display manager or graphical greeter is configured.
+The live ISO uses the standard `nixos` installation-media account. Getty automatically logs it in on tty1, and the NixOS Fish `loginShellInit` hook launches `niri-session -l` from that TTY. The `-l` argument tells the session launcher not to start another login shell. No display manager or graphical greeter is configured.
 
 Alacritty and LibreWolf autostart are configured independently through XDG desktop-autostart entries in the live ISO user's Home Manager profile. This does not modify Niri's configuration.
