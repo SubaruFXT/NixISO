@@ -46,10 +46,10 @@ The shared Home Manager module is `home/common.nix`. It enables Fish and install
 ## Host configurations
 
 - **ISO:** `hosts/iso/default.nix` builds the tested live installer.
-- **Laptop:** `hosts/laptop/default.nix` is configured for the detected UEFI laptop hardware. Its generated `hardware-configuration.nix` records the actual EFI, root, and swap filesystem UUIDs. It uses systemd-boot, 4 GiB disk swap, and ZRAM.
+- **Laptop:** `hosts/laptop/default.nix` is configured for the detected UEFI laptop hardware. Its generated `hardware-configuration.nix` records the actual EFI, root, and swap filesystem UUIDs. It uses systemd-boot, 4 GiB disk swap, and ZRAM. OpenSSH is enabled for the `subaru` account; root SSH login is disabled.
 - **Desktop:** `hosts/desktop/default.nix` is a template only. Its generated hardware configuration and boot settings still need to be captured from the desktop before it can be exposed as a flake host output.
 
-The laptop's installed system uses the established account name `subaru`. No password or password hash is stored in this repository; set the account password locally during installation.
+The laptop's installed system uses the established account name `subaru`. No password or password hash is stored in this repository; the account password is configured locally.
 
 Each machine has its own `system.stateVersion` and generated hardware file. Do not copy one machine's hardware configuration to the other.
 
@@ -77,9 +77,16 @@ The committed `flake.lock` pins exact nixpkgs and Home Manager revisions. Run `n
 
 ## Validation status
 
-The current locked ISO has built successfully and was boot-tested on the laptop: automatic login, Fish, Niri, Alacritty, LibreWolf, internet connectivity, and normal idle memory use were confirmed.
+- **ISO:** Built successfully and boot-tested on the laptop. The live session's automatic login, Fish, Niri, Alacritty, LibreWolf, and internet access were tested.
+- **Laptop build:** The complete `nixosConfigurations.laptop.config.system.build.toplevel` derivation built successfully using the committed flake lock.
+- **Laptop installation:** Installed to the laptop's internal Samsung 990 PRO SSD and booted successfully.
+- **Laptop services:** `sshd`, `greetd`, and `NetworkManager` were confirmed active on the installed system.
+- **Laptop applications:** Niri, Alacritty, and LibreWolf executables were found in the installed system and user profile.
+- **Laptop graphics and Wi-Fi drivers:** Both AMD graphics devices (Radeon RX 6500M/Navi 24 and integrated Radeon Vega/Cezanne) were observed using the `amdgpu` kernel driver. The MediaTek MT7922 adapter was observed using `mt7921e`.
+- **Laptop memory:** 7.5 GiB ZRAM and the 4 GiB disk swap partition were active; no swap was in use at the time of inspection.
+- **Desktop:** Not yet configured as a buildable flake host. Its hardware configuration must be generated from the actual desktop before adding the desktop output.
 
-The laptop's partitions and filesystems have been created and its hardware configuration generated. The installed laptop configuration has not yet been evaluated or installed. The desktop installation remains unconfigured.
+Driver binding was verified with `lspci -nnk`; this does not by itself test every graphics feature, Bluetooth, suspend/resume, or Wi-Fi reliability under load.
 
 ## Technical references
 
