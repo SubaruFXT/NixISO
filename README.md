@@ -7,8 +7,10 @@ It provides a minimal graphical environment for following the upstream NixOS man
 - Niri, using the upstream default configuration without repository-managed changes.
 - Alacritty, available in the live session and started automatically.
 - LibreWolf, available in the live session and started automatically at the NixOS manual installation guide.
+- Yazi as the XDG file chooser, launched in Alacritty for applications that use the file chooser portal.
 - Fish as the live installer's shell.
 - NetworkManager for network connectivity during installation.
+- Git and the OpenSSH client/server from the standard NixOS installation media.
 - The standard NixOS installer account, `nixos`, with automatic login in the live environment.
 - Basic AMD hardware support: redistributable firmware, AMD CPU microcode, graphics support, and the latest kernel package set from the locked nixpkgs revision.
 - Nix flakes and `nix-command` enabled in the live environment.
@@ -55,12 +57,20 @@ NixISO/
 
 - `flake.nix`: exposes the ISO NixOS configuration and build output.
 - `flake.lock`: pins exact nixpkgs and Home Manager revisions for reproducible builds.
-- `hosts/iso/default.nix`: configures the temporary live installer environment.
+- `hosts/iso/default.nix`: configures the temporary live installer environment, including the Yazi XDG file chooser backend.
 - `modules/nixos/amd-hardware.nix`: contains only the AMD-oriented hardware settings used by this ISO.
-- `home/iso.nix`: configures Alacritty, LibreWolf, and their live-session autostart entries for the temporary ISO account.
-- `docs/REFERENCES.md`: links to the upstream NixOS, Nixpkgs, Niri, and Home Manager documentation.
+- `home/iso.nix`: configures Alacritty, LibreWolf, Yazi's terminal chooser settings, and the live-session autostart entries for the temporary ISO account.
+- `docs/REFERENCES.md`: links to the upstream NixOS, Nixpkgs, Niri, Home Manager, and file chooser documentation.
 
 Home Manager is used only to assemble the live ISO user's application environment. It is not a recommendation or requirement for the installed system users create.
+
+## File chooser behavior
+
+The Niri XDG portal routes the FileChooser interface to `xdg-desktop-portal-termfilechooser`. Its packaged Yazi wrapper opens Yazi in Alacritty. The GTK portal remains installed for other portal interfaces, but it is not selected for Niri's FileChooser interface.
+
+The terminal chooser handles file selection, multiple-file selection, directory selection, and save dialogs for applications that use the XDG FileChooser portal. It does not replace the separate desktop file-manager interface used by actions such as “Show in File Manager”.
+
+Firefox-based applications may need their portal file-picker preference enabled. In LibreWolf, check `widget.use-xdg-desktop-portal.file-picker` in `about:config` and set it to `1` if its file dialogs do not open Yazi. Portal support is application-dependent, so not every application's chooser is guaranteed to use Yazi.
 
 ## Build the ISO
 
@@ -84,10 +94,11 @@ The build uses the exact dependency revisions recorded in `flake.lock`. Do not r
 2. Boot the target x86_64 machine from that USB.
 3. Connect to the network using the live environment.
 4. Use Alacritty and LibreWolf in Niri to follow the [official NixOS manual installation guide](https://nixos.org/manual/nixos/unstable/#sec-installation-manual).
-5. Partition and format disks according to your own requirements.
-6. Mount the filesystems under `/mnt`.
-7. Generate your machine's hardware configuration with `nixos-generate-config --root /mnt`.
-8. Create your own NixOS configuration, or use your own flake/repository, and install it following the manual.
+5. Use Yazi when an application invokes the XDG file chooser portal.
+6. Partition and format disks according to your own requirements.
+7. Mount the filesystems under `/mnt`.
+8. Generate your machine's hardware configuration with `nixos-generate-config --root /mnt`.
+9. Create your own NixOS configuration, or use your own flake/repository, and install it following the manual.
 
 NixISO deliberately stops at providing the live environment. The installed system configuration belongs to the person performing the installation.
 
@@ -99,10 +110,11 @@ This is a general-purpose AMD-oriented starting point, not a guarantee that ever
 
 ## Validation status
 
-- **Live ISO:** Previously built successfully and boot-tested on the laptop. Automatic login, Fish, Niri, Alacritty, LibreWolf, and internet connectivity were observed working.
+- **Live ISO:** The earlier ISO was successfully built and boot-tested on the laptop. Automatic login, Fish, Niri, Alacritty, LibreWolf, and internet connectivity were observed working.
+- **Yazi file chooser:** Added to the configuration; this updated integration still needs a fresh build and boot test.
 - **Laptop installed system:** This machine was installed and tested during development, but its personal host configuration is intentionally not part of this reusable template.
 - **Desktop:** The same ISO is intended to be used on the desktop. A boot test on the desktop is still required before declaring the ISO tested on both target machines.
 
 ## Technical references
 
-See [docs/REFERENCES.md](docs/REFERENCES.md) for upstream NixOS, Nixpkgs, Niri, and Home Manager documentation.
+See [docs/REFERENCES.md](docs/REFERENCES.md) for upstream NixOS, Nixpkgs, Niri, Home Manager, and file chooser documentation.
