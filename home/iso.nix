@@ -1,8 +1,6 @@
 { pkgs, ... }:
 
 {
-  programs.fish.enable = true;
-
   # Applications available inside the live Niri installation session.
   home.packages = [
     pkgs.alacritty
