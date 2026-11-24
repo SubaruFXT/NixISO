@@ -1,10 +1,8 @@
 { pkgs, ... }:
 
 {
-  home.packages = [
-    pkgs.gh
-  ];
-
+  # These autostart entries are ISO-only. They do not alter Niri's
+  # configuration and are not imported by installed host templates.
   home.file.".config/autostart/nixiso-alacritty.desktop".text = ''
     [Desktop Entry]
     Type=Application
