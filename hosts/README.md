@@ -1,9 +1,22 @@
 # Host configurations
 
-The desktop and laptop entry-point modules intentionally import the same shared AMD system module. Keep common operating-system behavior in `modules/nixos/amd-common.nix` so both machines use the same configuration.
+The desktop and laptop both import the same AMD system module:
 
-Each machine has its own `hardware-configuration.nix`, generated on that machine. Do not copy one machine's hardware configuration to the other. Hardware configuration records device-specific storage, initrd, and kernel-module details.
+- `modules/nixos/amd-common.nix`
+- `home/common.nix` (import this for the account used on each installed system)
 
-The host entry points are templates, not complete installable host outputs yet. In your fork, add the generated hardware files and choose the correct bootloader, filesystem layout, hostname, `system.stateVersion`, and user account for your machines. Keep those personal choices out of the shared AMD module when they can be shared through a common module.
+Keep shared operating-system behavior and shared user applications in those files. Machine-specific hardware belongs only in that machine's generated `hardware-configuration.nix`.
 
-The public base flake currently builds only the live ISO. The installed desktop and laptop outputs should be added in a fork after their actual hardware and boot configuration has been supplied.
+## In a personal fork
+
+1. Boot the NixISO installer on the target machine.
+2. Partition and mount the disks according to the NixOS manual.
+3. Generate that machine's hardware configuration with `nixos-generate-config --root /mnt`.
+4. Put the generated `hardware-configuration.nix` in the matching host directory.
+5. Set that machine's bootloader, file systems, host name, and `system.stateVersion`.
+6. Define the personal user account in the host or a personal module. Set its shell to Fish (or rely on `users.defaultUserShell`).
+7. Import `home/common.nix` for that user through Home Manager and set that user's `home.username`, `home.homeDirectory`, and `home.stateVersion`.
+
+The host modules are templates; they deliberately do not contain guessed partition, firmware, bootloader, or device details. They are not complete installable host outputs until the actual hardware configuration and machine-specific boot settings have been added in the fork.
+
+A two-machine fork should keep the shared modules identical and keep the per-device differences limited to the two host directories and generated hardware configurations.
