@@ -1,8 +1,16 @@
 { pkgs, ... }:
 
 {
-  # These autostart entries are ISO-only. They do not alter Niri's
-  # configuration and are not imported by installed host templates.
+  programs.fish.enable = true;
+
+  # Applications available inside the live Niri installation session.
+  home.packages = [
+    pkgs.alacritty
+    pkgs.librewolf
+  ];
+
+  # These autostart entries apply only to the live ISO account.
+  # They do not create defaults for the system users install later.
   home.file.".config/autostart/nixiso-alacritty.desktop".text = ''
     [Desktop Entry]
     Type=Application
