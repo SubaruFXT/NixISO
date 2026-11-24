@@ -7,6 +7,7 @@
   ];
 
   networking.hostName = "nixiso";
+  boot.supportedFilesystems.zfs = lib.mkForce false;
 
   # Use the standard temporary account provided by the NixOS installer.
   users.users.nixos.shell = pkgs.fish;
@@ -14,11 +15,11 @@
   # Log in directly on tty1. No display manager or graphical greeter.
   services.getty.autologinUser = "nixos";
 
-  # Start the Niri session from the automatically logged-in Fish shell.
-  # If Niri exits, control returns to the Fish prompt on tty1.
+  # Start Niri from the automatically logged-in Fish shell.
+  # -l tells niri-session not to start another login shell.
   programs.fish.loginShellInit = ''
     if test (tty) = /dev/tty1
-      niri-session
+      niri-session -l
     end
   '';
 

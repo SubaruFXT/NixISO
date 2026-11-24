@@ -14,7 +14,7 @@ The ISO is based on the upstream NixOS minimal installation image and adds only 
 - Alacritty.
 - LibreWolf, opening the NixOS manual's manual-installation section.
 - Automatic TTY login as the standard temporary `nixos` installation-media account.
-- Niri starts from Fish's login-shell initialization on tty1. There is no display manager or graphical login screen.
+- Niri starts from Fish's login-shell initialization on tty1 using `niri-session -l`. The `-l` argument prevents the session launcher from starting another login shell.
 - Git and the partitioning, networking, and filesystem utilities already supplied by the upstream NixOS installation image.
 
 Alacritty and LibreWolf start automatically in the ISO session. The ISO's TTY autologin and application autostart do not belong to the installed desktop or laptop configuration.
@@ -76,13 +76,14 @@ This keeps the base reusable for other AMD users while allowing each fork to mai
 From the repository root on NixOS:
 
 ```fish
-nix --extra-experimental-features 'nix-command flakes' flake lock
-nix --extra-experimental-features 'nix-command flakes' build .#iso
+nix --extra-experimental-features 'nix-command flakes' build .#packages.x86_64-linux.iso
 ```
 
 The ISO appears under `result/iso/`.
 
-Commit the generated `flake.lock` to Git after the first lock operation. It pins exact nixpkgs and Home Manager revisions for reproducible future builds. This configuration has been committed to GitHub but has not yet been evaluated or built; successful evaluation and ISO testing are still required.
+The committed `flake.lock` pins exact nixpkgs and Home Manager revisions for future builds. Run `nix --extra-experimental-features 'nix-command flakes' flake update` only when intentionally updating those dependencies.
+
+The current locked configuration has built successfully. The ISO has been boot-tested on the laptop: automatic login, Fish, Niri, Alacritty, LibreWolf, and network connectivity were confirmed. The installed desktop and laptop configurations still require their respective machine-generated hardware configuration, bootloader, and storage settings.
 
 ## References
 
